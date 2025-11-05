@@ -47,7 +47,7 @@ Currently working at **Webineh**, focusing on building scalable and fast web app
 
 ### 📫 Connect With Me
 <p>
-  <a href="[https://linkedin.com/in/your-linkedin](https://www.linkedin.com/in/amoor-navasartian-37515924a/)" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
+  <a href="(https://www.linkedin.com/in/amoor-navasartian-37515924a/)" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
   <a href="mailto:amoor6navasartian@gmail.com"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
 </p>
 
