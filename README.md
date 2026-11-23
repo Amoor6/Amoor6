@@ -87,41 +87,39 @@ My work usually lives somewhere between **clean engineering**, **good UX**, and 
 <tr>
 <td width="50%" valign="top">
 
-### 🌬️ ARM AC
+### 🤖 Accounting & Finance AI Platform
 
-A modern Persian HVAC website designed for performance, discoverability, and a smooth responsive experience.
+A Persian RTL accounting intelligence platform built for accountants, combining an AI assistant with structured financial tools and tax resources.
 
 **Highlights**
 
-* SEO-friendly Next.js architecture
-* Responsive Persian RTL interface
-* Dynamic services and content
-* Modern animations and UI sections
-* Production-focused performance
+* Streaming AI chat interface for tax & accounting queries
+* Financial statements workspace & accounting calculators
+* Structured Persian accounting laws & tools reference
+* Custom Liquid Glass design system & Framer Motion UI
+* Full-stack Next.js App Router architecture
 
 **Stack**
 
-`Next.js` `TypeScript` `Tailwind CSS` `Node.js` `SEO`
+`Next.js` `TypeScript` `Tailwind CSS` `Framer Motion` `AI Streaming`
 
 <br />
 
-<a href="https://armac-group.ir">
-  <img src="https://img.shields.io/badge/View%20Live%20Website-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white" alt="View ARM AC website" />
-</a>
+<img src="https://img.shields.io/badge/AI%20Product-Private-2563EB?style=for-the-badge&logo=openai&logoColor=white" alt="Accounting and Finance AI platform" />
 
 </td>
 <td width="50%" valign="top">
 
-### 🧮 Budget Management Platform
+### 🧮 Financial & Budget Management Platform
 
-A data-heavy financial management and reporting system developed for educational institutions.
+A data-heavy financial management, budgeting, and reporting system built for institutional and enterprise workflows.
 
 **Highlights**
 
-* Complex financial data tables
-* Advanced filtering and reporting
-* Role-based workflows
-* Excel import and export
+* Complex financial data tables & multi-year tracking
+* Advanced filtering, analytics, and reporting views
+* Role-based approval workflows
+* Excel import and export pipelines
 * Backend and SQL integrations
 
 **Stack**
@@ -130,7 +128,7 @@ A data-heavy financial management and reporting system developed for educational
 
 <br />
 
-<img src="https://img.shields.io/badge/Enterprise%20Project-Private-111827?style=for-the-badge&logo=lock&logoColor=white" alt="Private enterprise project" />
+<img src="https://img.shields.io/badge/Enterprise%20Finance-Private-111827?style=for-the-badge&logo=lock&logoColor=white" alt="Private enterprise finance project" />
 
 </td>
 </tr>
@@ -138,9 +136,32 @@ A data-heavy financial management and reporting system developed for educational
 <tr>
 <td width="50%" valign="top">
 
+### 🌬️ ARM AC
+
+A modern Persian HVAC web platform engineered for fast load times, SEO discoverability, and a smooth responsive RTL experience.
+
+**Highlights**
+
+* SEO-friendly Next.js architecture
+* Responsive Persian RTL interface
+* Dynamic services and content sections
+* Modern animations and polished UI
+* Production-focused Core Web Vitals
+
+**Stack**
+
+`Next.js` `TypeScript` `Tailwind CSS` `Node.js` `SEO`
+
+<br />
+
+<img src="https://img.shields.io/badge/Client%20Project-Production-0F172A?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="ARM AC production project" />
+
+</td>
+<td width="50%" valign="top">
+
 ### 🌐 Developer Portfolio
 
-My personal space for showcasing selected projects, technical skills, and frontend experiments.
+My personal space for showcasing selected projects, technical skills, and frontend architecture experiments.
 
 **Highlights**
 
@@ -159,29 +180,6 @@ My personal space for showcasing selected projects, technical skills, and fronte
 <a href="https://portfolio-mu-blond-27.vercel.app/">
   <img src="https://img.shields.io/badge/Open%20Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Open portfolio" />
 </a>
-
-</td>
-<td width="50%" valign="top">
-
-### 🏗️ Frontend Systems
-
-Reusable components and application interfaces built for real production workflows.
-
-**What I Build**
-
-* Admin panels and dashboards
-* Reusable component systems
-* Responsive landing pages
-* Form-heavy business interfaces
-* Maintainable Next.js applications
-
-**Main Focus**
-
-`Clean Code` `UX` `Performance` `Scalability`
-
-<br />
-
-<img src="https://img.shields.io/badge/Always%20Building-0F172A?style=for-the-badge&logo=code&logoColor=white" alt="Always building" />
 
 </td>
 </tr>

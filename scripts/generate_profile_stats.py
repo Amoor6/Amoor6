@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate theme-aware Yearly & Monthly GitHub Activity SVG cards for Amoor6."""
+"""Generate theme-aware Yearly/Monthly GitHub Activity SVGs and frame the Contribution Snake SVG."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -7,6 +7,7 @@ from html import escape
 import json
 import os
 from pathlib import Path
+import re
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -36,6 +37,11 @@ THEMES: dict[str, dict[str, str]] = {
         "pill_bg": "#172554",
         "pill_border": "#1E3A8A",
         "pill_text": "#93C5FD",
+        "c0": "#161B22",
+        "c1": "#1E3A8A",
+        "c2": "#2563EB",
+        "c3": "#3B82F6",
+        "c4": "#93C5FD",
     },
     "light": {
         "bg": "#FFFFFF",
@@ -53,6 +59,11 @@ THEMES: dict[str, dict[str, str]] = {
         "pill_bg": "#EFF6FF",
         "pill_border": "#BFDBFE",
         "pill_text": "#1D4ED8",
+        "c0": "#EBEDF0",
+        "c1": "#DBEAFE",
+        "c2": "#93C5FD",
+        "c3": "#60A5FA",
+        "c4": "#2563EB",
     },
 }
 
@@ -62,6 +73,24 @@ query($login: String!, $from: DateTime!, $to: DateTime!) {
     contributionsCollection(from: $from, to: $to) {
       totalCommitContributions
       restrictedContributionsCount
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+ROLLING_CALENDAR_QUERY = """
+query($login: String!) {
+  user(login: $login) {
+    contributionsCollection {
       contributionCalendar {
         totalContributions
         weeks {
@@ -154,6 +183,64 @@ def get_activity(now: datetime) -> dict[str, Any]:
         )
 
     return summarize_activity(years_data, current_year)
+
+
+def get_rolling_calendar() -> dict[str, Any]:
+    response = request_json(
+        GRAPHQL_URL,
+        {"query": ROLLING_CALENDAR_QUERY, "variables": {"login": USERNAME}},
+    )
+    calendar = (
+        (((response.get("data") or {}).get("user") or {}).get("contributionsCollection") or {}).get(
+            "contributionCalendar"
+        )
+        or {}
+    )
+    weeks = calendar.get("weeks") or []
+    all_days: list[dict[str, Any]] = []
+    month_labels: list[tuple[int, str]] = []
+    last_month = None
+    last_label_week = -10
+
+    for w_idx, week in enumerate(weeks):
+        w_days = week.get("contributionDays") or []
+        if not w_days:
+            continue
+        for day in w_days:
+            d_str = str(day.get("date", ""))
+            if d_str.endswith("-01") and len(d_str) >= 7:
+                m_num = int(d_str[5:7])
+                if w_idx - last_label_week >= 3:
+                    month_labels.append((w_idx, MONTH_NAMES[m_num - 1]))
+                    last_label_week = w_idx
+                last_month = m_num
+            all_days.append(
+                {
+                    "date": d_str,
+                    "count": int(day.get("contributionCount", 0)),
+                }
+            )
+
+    today_entry = all_days[-1] if all_days else {"date": "", "count": 0}
+    yesterday_entry = all_days[-2] if len(all_days) >= 2 else {"date": "", "count": 0}
+    last_7_total = sum(d["count"] for d in all_days[-7:])
+
+    def short_date(d_str: str) -> str:
+        try:
+            dt = datetime.strptime(d_str, "%Y-%m-%d")
+            return f"{MONTH_NAMES[dt.month - 1]} {dt.day}"
+        except ValueError:
+            return d_str
+
+    return {
+        "total": int(calendar.get("totalContributions", 0)),
+        "today_count": today_entry["count"],
+        "today_date": short_date(today_entry["date"]),
+        "yesterday_count": yesterday_entry["count"],
+        "yesterday_date": short_date(yesterday_entry["date"]),
+        "last_7_count": last_7_total,
+        "month_labels": month_labels,
+    }
 
 
 def summarize_activity(years_data: list[dict[str, Any]], current_year: int) -> dict[str, Any]:
@@ -351,6 +438,95 @@ def activity_svg(summary: dict[str, Any], mode: str, now: datetime) -> str:
     )
 
 
+def enhance_snake_svg(raw_svg: str, calendar_info: dict[str, Any], mode: str) -> str:
+    """Wrap Platane/snk output in an original GitHub-style Contribution Calendar card with Today/Yesterday counters."""
+    t = THEMES[mode]
+    # Replace original viewBox="-16 -32 880 192" width="880" height="192" with framed viewBox="-52 -78 924 264"
+    framed_svg = re.sub(
+        r'viewBox="[^"]+"[^>]*width="[^"]+"[^>]*height="[^"]+"',
+        'viewBox="-52 -78 924 264" width="880" height="251"',
+        raw_svg,
+        count=1,
+    )
+
+    # Restore commit square colors ~15% after the snake eats them so the full commit graph stays visible
+    def restore_after_snake(match: re.Match[str]) -> str:
+        kf_name = match.group(1)
+        t1 = float(match.group(2))
+        color_var = match.group(3)
+        t2 = float(match.group(4))
+        if t2 < 82.0:
+            t_hold = min(96.0, t2 + 12.0)
+            t_restore = min(99.0, t2 + 16.0)
+            return (
+                f"@keyframes {kf_name}{{"
+                f"{t1:.2f}%{{fill:{color_var}}}"
+                f"{t2:.2f}%,{t_hold:.2f}%{{fill:var(--ce)}}"
+                f"{t_restore:.2f}%,100%{{fill:{color_var}}}}}"
+            )
+        return match.group(0)
+
+    framed_svg = re.sub(
+        r"@keyframes (c[a-z0-9]+)\{([0-9.]+)%\{fill:(var\(--c[1-4]\))\}([0-9.]+)%,100%\{fill:var\(--ce\)\}\}",
+        restore_after_snake,
+        framed_svg,
+    )
+
+    total_last_year = calendar_info["total"]
+    today_cnt = calendar_info["today_count"]
+    today_dt = calendar_info["today_date"]
+    yest_cnt = calendar_info["yesterday_count"]
+    yest_dt = calendar_info["yesterday_date"]
+    week_cnt = calendar_info["last_7_count"]
+
+    bg_and_chrome: list[str] = [
+        # Outer card background & border matching activity card
+        f'<rect x="-51" y="-77" width="922" height="262" rx="12" fill="{t["bg"]}" stroke="{t["border"]}" stroke-width="1.5" />',
+        # Top Header Left: Total contributions in the last year
+        f'<text x="-30" y="-47" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="14.5" font-weight="700" fill="{t["text"]}">{total_last_year:,} contributions in the last year</text>',
+        # Top Header Right: Today, Yesterday, Last 7 Days badges
+        f'<rect x="444" y="-64" width="132" height="24" rx="12" fill="{t["pill_bg"]}" stroke="{t["pill_border"]}" stroke-width="1" />',
+        f'<text x="510" y="-48" text-anchor="middle" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="11" font-weight="700" fill="{t["pill_text"]}">Today ({escape(today_dt)}): {today_cnt}</text>',
+        f'<rect x="584" y="-64" width="144" height="24" rx="12" fill="{t["panel"]}" stroke="{t["border"]}" stroke-width="1" />',
+        f'<text x="656" y="-48" text-anchor="middle" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="11" font-weight="600" fill="{t["subtext"]}">Yesterday ({escape(yest_dt)}): <tspan fill="{t["title"]}" font-weight="700">{yest_cnt}</tspan></text>',
+        f'<rect x="736" y="-64" width="112" height="24" rx="12" fill="{t["panel"]}" stroke="{t["border"]}" stroke-width="1" />',
+        f'<text x="792" y="-48" text-anchor="middle" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="11" font-weight="600" fill="{t["subtext"]}">Last 7d: <tspan fill="{t["title"]}" font-weight="700">{week_cnt}</tspan></text>',
+        # Day-of-week labels on the left axis (Mon, Wed, Fri)
+        f'<text x="-8" y="28" text-anchor="end" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">Mon</text>',
+        f'<text x="-8" y="60" text-anchor="end" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">Wed</text>',
+        f'<text x="-8" y="92" text-anchor="end" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">Fri</text>',
+    ]
+
+    # Month labels along the top of the 53-week grid (y=-21 sits cleanly above the snake's y=-16 top corridor)
+    for w_idx, m_name in calendar_info.get("month_labels", []):
+        mx = 2 + w_idx * 16
+        bg_and_chrome.append(
+            f'<text x="{mx}" y="-21" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" font-weight="500" fill="{t["muted"]}">{escape(m_name)}</text>'
+        )
+
+    # Bottom row below the snake progress bar (y=144..156): caption left + Less/More legend right
+    legend_levels = [t["c0"], t["c1"], t["c2"], t["c3"], t["c4"]]
+    bg_and_chrome.append(
+        f'<text x="2" y="173" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">Live GitHub contribution calendar · animated snake overlay</text>'
+    )
+    bg_and_chrome.append(
+        f'<text x="738" y="173" text-anchor="end" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">Less</text>'
+    )
+    for l_idx, color in enumerate(legend_levels):
+        lx = 746 + l_idx * 14
+        bg_and_chrome.append(
+            f'<rect x="{lx}" y="163" width="10" height="10" rx="2" fill="{color}" />'
+        )
+    bg_and_chrome.append(
+        f'<text x="846" y="173" text-anchor="end" font-family="Segoe UI, Ubuntu, Inter, sans-serif" font-size="10.5" fill="{t["muted"]}">More</text>'
+    )
+
+    chrome_block = "\n".join(bg_and_chrome)
+    if "</style>" in framed_svg:
+        framed_svg = framed_svg.replace("</style>", f"</style>\n{chrome_block}\n", 1)
+    return framed_svg
+
+
 def main() -> None:
     today = datetime.now(timezone.utc)
     summary = get_activity(today)
@@ -359,6 +535,17 @@ def main() -> None:
         (OUTPUT_DIR / f"activity-{mode}.svg").write_text(
             activity_svg(summary, mode, today), encoding="utf-8"
         )
+
+    calendar_info = get_rolling_calendar()
+    for mode in THEMES:
+        snake_path = OUTPUT_DIR / f"snake-{mode}.svg"
+        if snake_path.exists():
+            raw_snake = snake_path.read_text(encoding="utf-8")
+            if "contributions in the last year" not in raw_snake:
+                snake_path.write_text(
+                    enhance_snake_svg(raw_snake, calendar_info, mode), encoding="utf-8"
+                )
+
     print(
         f"Generated activity SVGs for {USERNAME}: "
         f"{summary['total_all_years']} total contributions across {len(summary['years'])} years, "

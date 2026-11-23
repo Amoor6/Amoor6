@@ -30,12 +30,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Generate Yearly and Monthly GitHub Activity SVGs
-        env:
-          PROFILE_USERNAME: Amoor6
-          GITHUB_TOKEN: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
-        run: python3 scripts/generate_profile_stats.py
-
       - name: Generate light and dark contribution snakes
         uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3
         with:
@@ -44,6 +38,12 @@ jobs:
           outputs: |
             dist/snake-light.svg?color_snake=#2563EB&color_dots=#EBEDF0,#DBEAFE,#93C5FD,#60A5FA,#2563EB
             dist/snake-dark.svg?color_snake=#60A5FA&color_dots=#161B22,#1E3A8A,#2563EB,#3B82F6,#93C5FD
+
+      - name: Generate Yearly/Monthly Activity SVGs and frame Contribution Snake SVGs
+        env:
+          PROFILE_USERNAME: Amoor6
+          GITHUB_TOKEN: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
+        run: python3 scripts/generate_profile_stats.py
 
       - name: Publish generated SVGs to output branch
         uses: crazy-max/ghaction-github-pages@1d6ee9b181a81033a16bd707a1401afa978daab4 # v5

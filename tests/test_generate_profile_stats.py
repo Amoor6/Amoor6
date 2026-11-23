@@ -86,6 +86,31 @@ class ActivityStatsTests(unittest.TestCase):
             self.assertIn("6.7x YoY", svg)
             self.assertIn("124 (Jun)", svg)
 
+    def test_enhance_snake_svg_adds_calendar_chrome_and_restores_keyframes(self) -> None:
+        raw_snake = (
+            '<svg viewBox="-16 -32 880 192" width="880" height="192" xmlns="http://www.w3.org/2000/svg">'
+            "<style>@keyframes c0{10.00%{fill:var(--c2)}10.02%,100%{fill:var(--ce)}}</style>"
+            '<rect class="c c0" x="2" y="2" rx="2" ry="2"/></svg>'
+        )
+        cal_info = {
+            "total": 567,
+            "today_count": 4,
+            "today_date": "Nov 23",
+            "yesterday_count": 1,
+            "yesterday_date": "Nov 22",
+            "last_7_count": 8,
+            "month_labels": [(1, "Dec"), (5, "Jan")],
+        }
+        for mode in ("dark", "light"):
+            enhanced = profile_stats.enhance_snake_svg(raw_snake, cal_info, mode)
+            ElementTree.fromstring(enhanced)
+            self.assertIn("567 contributions in the last year", enhanced)
+            self.assertIn("Today (Nov 23): 4", enhanced)
+            self.assertIn("Yesterday (Nov 22): <tspan", enhanced)
+            self.assertIn("Dec", enhanced)
+            self.assertIn("Mon", enhanced)
+            self.assertIn("26.02%,100%{fill:var(--c2)}", enhanced)
+
 
 if __name__ == "__main__":
     unittest.main()
