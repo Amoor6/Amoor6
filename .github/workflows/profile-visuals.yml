@@ -1,0 +1,51 @@
+# Builds profile-only visuals into the dedicated `output` branch.
+# No source README changes are made by this workflow.
+name: Refresh profile visuals
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # Required only for publishing the generated SVGs to `output`.
+
+concurrency:
+  group: profile-visuals
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'Amoor6/Amoor6'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the profile repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6 (verified 2026-11-23)
+        with:
+          persist-credentials: false
+
+      - name: Generate GitHub contribution and language graphics
+        env:
+          PROFILE_USERNAME: Amoor6
+          GITHUB_TOKEN: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
+        run: python3 scripts/generate_profile_stats.py
+
+      - name: Generate light and dark contribution snakes
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3 (verified 2026-11-23)
+        with:
+          github_user_name: Amoor6
+          github_token: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
+          outputs: |
+            dist/snake-light.svg?color_snake=#2563EB&color_dots=#F1F5F9,#DBEAFE,#93C5FD,#60A5FA,#2563EB
+            dist/snake-dark.svg?color_snake=#60A5FA&color_dots=#0B1220,#1E3A8A,#2563EB,#3B82F6,#93C5FD
+
+      - name: Publish generated SVGs to output branch
+        uses: crazy-max/ghaction-github-pages@1d6ee9b181a81033a16bd707a1401afa978daab4 # v5 (verified 2026-11-23)
+        with:
+          target_branch: output
+          build_dir: dist
+          jekyll: false
+          commit_message: 'chore: refresh profile graphics'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
