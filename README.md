@@ -32,27 +32,29 @@ I turn complex requirements into clean interfaces, reusable components, and main
 ## About Me
 
 ```ts
-const developer = {
-  name: "Amoor Navasartian",
-  role: "Frontend Developer",
-  workplace: "Webineh",
-
-  coreStack: [
-    "React",
-    "Next.js",
-    "TypeScript",
-    "Tailwind CSS",
-  ],
-
-  interestedIn: [
-    "Frontend architecture",
-    "Design systems",
-    "Performance optimization",
-    "Scalable web applications",
-  ],
-
-  philosophy: "Build clean. Ship confidently. Improve constantly.",
+type DeveloperProfile = {
+  readonly name: string;
+  readonly role: "Frontend Engineer";
+  readonly company: string;
+  readonly stack: readonly string[];
+  readonly architecture: readonly string[];
+  readonly currentFocus: readonly string[];
+  readonly philosophy: () => string;
 };
+
+const amoor: DeveloperProfile = {
+  name: "Amoor Navasartian",
+  role: "Frontend Engineer",
+  company: "Webineh",
+  stack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Redux"],
+  architecture: ["Design Systems", "Data-Heavy Dashboards", "Performance & SEO", "RTL Interfaces"],
+  currentFocus: [
+    "Scalable Next.js & enterprise frontend architecture",
+    "Real business workflows & backend integrations",
+    "AI-powered developer workflows & product interfaces",
+  ],
+  philosophy: () => "Build clean. Ship confidently. Obsess over the details.",
+} as const;
 ```
 
 I’m a frontend developer focused on building responsive, accessible, and production-ready web applications.
@@ -191,13 +193,27 @@ Reusable components and application interfaces built for real production workflo
 
 <div align="center">
 
-<img height="170" src="https://github-readme-stats.vercel.app/api?username=Amoor6&show_icons=true&hide_border=true&border_radius=12&bg_color=0d1117&title_color=60a5fa&icon_color=3b82f6&text_color=cbd5e1&include_all_commits=true" alt="Amoor's GitHub statistics" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Amoor6/Amoor6/output/activity-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Amoor6/Amoor6/output/activity-light.svg" />
+  <img width="100%" src="https://raw.githubusercontent.com/Amoor6/Amoor6/output/activity-dark.svg" alt="Amoor's multi-year and monthly GitHub contribution analytics" />
+</picture>
+
+<br />
+<br />
+
+<img height="170" src="https://github-readme-streak-stats.herokuapp.com?user=Amoor6&hide_border=true&border_radius=12&background=0D1117&ring=3B82F6&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B&currStreakNum=F8FAFC&sideNums=F8FAFC" alt="Amoor's GitHub contribution streak" />
 
 <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Amoor6&layout=compact&hide_border=true&border_radius=12&bg_color=0d1117&title_color=60a5fa&text_color=cbd5e1&langs_count=8" alt="Amoor's most used languages" />
 
 <br />
+<br />
 
-<img width="70%" src="https://github-readme-streak-stats.herokuapp.com?user=Amoor6&hide_border=true&border_radius=12&background=0D1117&ring=3B82F6&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B&currStreakNum=F8FAFC&sideNums=F8FAFC" alt="Amoor's GitHub contribution streak" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Amoor6/Amoor6/output/snake-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Amoor6/Amoor6/output/snake-light.svg" />
+  <img width="100%" src="https://raw.githubusercontent.com/Amoor6/Amoor6/output/snake-dark.svg" alt="Amoor's GitHub contribution graph snake animation" />
+</picture>
 
 </div>
 
@@ -245,17 +261,6 @@ Readable systems that developers can confidently maintain.
 </td>
 </tr>
 </table>
-
----
-
-## Current Direction
-
-```txt
-→ Building scalable Next.js applications
-→ Improving frontend architecture and design systems
-→ Working with real business workflows and backend integrations
-→ Exploring AI-powered tools and product development
-```
 
 ---
 
