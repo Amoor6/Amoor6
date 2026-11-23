@@ -45,7 +45,7 @@ type DeveloperProfile = {
 const amoor: DeveloperProfile = {
   name: "Amoor Navasartian",
   role: "Frontend Engineer",
-  company: "Webineh",
+  company: "Rastano",
   stack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Redux"],
   architecture: ["Design Systems", "Data-Heavy Dashboards", "Performance & SEO", "RTL Interfaces"],
   currentFocus: [
@@ -59,7 +59,7 @@ const amoor: DeveloperProfile = {
 
 I’m a frontend developer focused on building responsive, accessible, and production-ready web applications.
 
-At **Webineh**, I work on real-world frontend systems, connect interfaces to backend services, build data-heavy dashboards, and transform complex requirements into smooth user experiences.
+At **Rastano**, I work on real-world frontend systems, connect interfaces to backend services, build data-heavy dashboards, and transform complex requirements into smooth user experiences.
 
 My work usually lives somewhere between **clean engineering**, **good UX**, and an unreasonable obsession with spacing.
 
